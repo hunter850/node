@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "SET NODE_ENV=food && node src/12.dotenv.js",
+    "dev": "SET NODE_ENV=goods && node src/12.dotenv.js"
   },
   "keywords": [],
   "author": "",
