@@ -9,6 +9,10 @@ app.get("/", (req, res) => {
     res.send(`<h2>Hello Express</h2>`);
 });
 
+app.use((req, res) => {
+    res.send(`<h2>找不到頁面 404</h2>`);
+});
+
 app.listen(PORT, () => {
     console.log(`server started: http://localhost:${PORT}`);
 })
