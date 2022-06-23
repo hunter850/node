@@ -4,13 +4,21 @@ const app = express();
 
 const { PORT } = process.env;
 
+app.set("view engine", "ejs");
+
+app.use(express.static("public"));
+app.use("/bootstrap", express.static("node_modules/bootstrap/dist"));
+
 app.get("/", (req, res) => {
-    // res.end(`<h2>Hello Express</h2>`);
-    res.send(`<h2>Hello Express</h2>`);
+    res.render("main", {name: "Ming"});
 });
 
 app.use((req, res) => {
-    res.send(`<h2>找不到頁面 404</h2>`);
+    res.send(`
+        <div style="width: 640px; height: 360px">
+            <img src="/imgs/6M513.png" alt="404_not_found" style="width: 100%; height: 100%; object-fit: cover " />
+        </div>
+    `);
 });
 
 app.listen(PORT, () => {
