@@ -4,7 +4,11 @@ const app = express();
 
 const { PORT } = process.env;
 //middleware 中介軟體 幫忙預先處理送進來的request
-const bodyParser = express.urlencoded({extended: false});
+// const bodyParser = express.urlencoded({extended: false});
+//-------------Top-levet middleware--------------
+app.use(express.urlencoded({extended: false}));
+app.use(express.json());
+
 
 app.set("view engine", "ejs");
 
@@ -20,7 +24,10 @@ app.get("/try_qs", (req, res) => {
 });
 
 //用postman http://localhost:3300/try_post 選x-www-form-urlencoded 輸入key value 就能看到回傳
-app.post("/try_post", bodyParser, (req, res) => {
+// app.post("/try_post", bodyParser, (req, res) => {
+//     res.json(req.body);
+// });
+app.post("/try_post", (req, res) => {
     res.json(req.body);
 });
 
