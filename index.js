@@ -1,8 +1,8 @@
 require("dotenv").config();
 const express = require("express");
 const app = express();
-const multer  = require('multer')
-const upload = multer({ dest: "tmp_uploads" })
+const multer  = require('multer');
+const upload = multer({ dest: "tmp_uploads" });
 
 const { PORT } = process.env;
 //middleware 中介軟體 幫忙預先處理送進來的request
@@ -11,7 +11,7 @@ const { PORT } = process.env;
 app.use(express.urlencoded({extended: false}));
 app.use(express.json());
 
-
+//-------------設定ejs作為模板---------------
 app.set("view engine", "ejs");
 
 //-----------------route--------------------
@@ -42,6 +42,7 @@ app.route('/try_post_form')
         res.render('try_post_form', {account, password});
     });
 
+//singe只能上傳單欄單檔
 app.post('/try_upload', upload.single('avatar'), (req, res)=>{
     res.json(req.file);
 });
