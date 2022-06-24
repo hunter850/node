@@ -12,11 +12,10 @@ app.use(express.json());
 
 app.set("view engine", "ejs");
 
-
+//-----------------route--------------------
 app.get("/", (req, res) => {
     res.render("main", {name: "Ming"});
 });
-
 
 //去http://localhost:3300/try_qs?a=10&b=20 看會回傳一包物件 a[]=10 a會是陣列 a[命名] a會是物件
 app.get("/try_qs", (req, res) => {
