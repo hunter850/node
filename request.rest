@@ -11,3 +11,9 @@ Content-Type: application/json
     "name": "Flora",
     "age": 30
 }
+
+###
+POST http://localhost:3300/try_post_form
+Content-Type: application/x-www-form-urlencoded
+
+account=abc123&password=def456

@@ -30,6 +30,16 @@ app.post("/try_post", (req, res) => {
     res.json(req.body);
 });
 
+//小心因為到/try-post-form這個頁面會先跑post 如果ejs裡有擺變數 會抓到undefined噴錯 所以ejs template裡面要寫三元運算判斷若undefined 要輸出 ""
+app.route('/try_post_form')
+    .get((req, res)=>{
+        res.render('try_post_form');
+    })
+    .post((req, res)=>{
+        const {account, password} = req.body;
+        res.render('try_post_form', {account, password});
+    });
+
 // ------------static folder----------------
 app.use(express.static("public"));
 app.use("/bootstrap", express.static("node_modules/bootstrap/dist"));

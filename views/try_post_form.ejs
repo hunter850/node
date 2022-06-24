@@ -1,0 +1,36 @@
+<%- include("parts/head") %>
+<%- include("parts/navbar") %>
+    <div class="container">
+        <form method="post">
+            <div class="mb-3">
+                <label for="exampleInputEmail1" class="form-label"
+                    >Email address</label
+                >
+                <input
+                    type="text"
+                    name="account"
+                    class="form-control"
+                    id="exampleInputEmail1"
+                    aria-describedby="emailHelp"
+                />
+                <div class="form-text"><%= typeof account !=='undefined' ? account : '' %></div>
+            </div>
+            <div class="mb-3">
+                <label for="exampleInputPassword1" class="form-label"
+                    >Password</label
+                >
+                <input
+                    type="text"
+                    name="password"
+                    class="form-control"
+                    id="exampleInputPassword1"
+                />
+                <div class="form-text"><%= locals.password ?? ''  %></div>
+            </div>
+            <div class="mb-3 form-check">
+    
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+<%- include("parts/scripts") %>
+<%- include("parts/foot") %>
