@@ -46,6 +46,10 @@ app.route('/try_post_form')
 app.post('/try_upload', upload.single('avatar'), (req, res)=>{
     res.json(req.file);
 });
+//array能單欄上傳多檔案
+app.post('/try_uploads', upload.array('photos'), (req, res)=>{
+    res.json(req.files);
+});
 
 // ------------static folder----------------
 app.use(express.static("public"));
