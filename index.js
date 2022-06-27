@@ -1,8 +1,8 @@
 require("dotenv").config();
 const express = require("express");
 const app = express();
-const multer  = require('multer');
-const upload = multer({ dest: "tmp_uploads" });
+// const multer  = require('multer');
+const upload = require(__dirname + "/modules/upload_images");
 
 const { PORT } = process.env;
 //middleware 中介軟體 幫忙預先處理送進來的request
