@@ -10,9 +10,16 @@ const { PORT } = process.env;
 //-------------Top-levet middleware--------------
 app.use(express.urlencoded({extended: false}));
 app.use(express.json());
+//middleware不執行next就會斷在這裡 後面的都不會跑
+// app.use((req, res, next) => {
+//     res.locals.shinder = '哈囉';
+//     next();
+// })
 
 //-------------設定ejs作為模板---------------
 app.set("view engine", "ejs");
+//--------------網址區分大小寫-----------------
+// app.set("case sensitive routing", true);
 
 //-----------------route--------------------
 app.get("/", (req, res) => {
@@ -50,6 +57,29 @@ app.post('/try_upload', upload.single('avatar'), (req, res)=>{
 app.post('/try_uploads', upload.array('photos'), (req, res)=>{
     res.json(req.files);
 });
+
+//:代表藥用params ?為選擇性 可傳可不傳
+app.get('/try_params/:action?/:id?', (req, res)=>{
+    res.json(req.params);
+});
+
+//regexp 只要符合regexp判斷的就會進入
+app.get(/^\/hi\/?/i, (req, res)=>{
+    res.json({url: req.url});
+});
+
+//陣列 符合陣列的都會進入
+app.get(["/aaa", "/bbb"], (req, res)=>{
+    res.json({url: req.url, name: "Array"});
+});
+
+//-----------------router--------------------
+// app.use("/admins", require(__dirname + "/routes/admins"))
+//這樣就會/admins和/都能進入
+const adminRouter = require(__dirname + "/routes/admins");
+app.use("/admins", adminRouter);
+app.use(adminRouter);
+
 
 // ------------static folder----------------
 app.use(express.static("public"));
