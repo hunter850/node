@@ -3,11 +3,17 @@ const express = require("express");
 const app = express();
 // const multer  = require('multer');
 const upload = require(__dirname + "/modules/upload_images");
+const session = require('express-session');
 
-const { PORT } = process.env;
+const { PORT, SECRET } = process.env;
 //middleware 中介軟體 幫忙預先處理送進來的request
 // const bodyParser = express.urlencoded({extended: false});
 //-------------Top-levet middleware--------------
+app.use(session({
+    saveUninitialized: false,
+    resave: false,
+    secret: SECRET,
+}));
 app.use(express.urlencoded({extended: false}));
 app.use(express.json());
 //middleware不執行next就會斷在這裡 後面的都不會跑
@@ -72,6 +78,15 @@ app.get(/^\/hi\/?/i, (req, res)=>{
 app.get(["/aaa", "/bbb"], (req, res)=>{
     res.json({url: req.url, name: "Array"});
 });
+
+app.get('/try_session', (req, res)=>{
+    req.session.my_var = req.session.my_var || 0;
+    req.session.my_var++;
+    res.json({
+        my_var: req.session.my_var,
+        session: req.session,
+    });
+})
 
 //-----------------router--------------------
 // app.use("/admins", require(__dirname + "/routes/admins"))
