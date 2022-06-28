@@ -1,0 +1,31 @@
+<%- include("parts/head") %>
+<%- include("parts/navbar") %>
+<div class="container">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Name</th>
+                <th scope="col">Gender</th>
+                <th scope="col">Age</th>
+                <th scope="col">Id</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% for(let i in rawData) { %> 
+            <tr>
+                <th scope="row"><%= parseInt(i) + 1 %> </th>
+                <td><%= rawData[i].firstName + " " + rawData[i].lastName %> </td>
+                <td><%= rawData[i].gender %> </td>
+                <td><%= rawData[i].age %> </td>
+                <td><%= rawData[i].id %> </td>
+            </tr>
+            <% } %> 
+        </tbody>
+    </table>
+</div>
+<%- include("parts/scripts") %>
+<script>
+    const data = <%- JSON.stringify(rawData) %>;
+</script>
+<%- include("parts/foot") %>
