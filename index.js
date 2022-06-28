@@ -5,6 +5,9 @@ const app = express();
 const upload = require(__dirname + "/modules/upload_images");
 const session = require('express-session');
 const moment = require('moment-timezone');
+const db = require(__dirname + '/modules/connect_db');
+const MysqlStore = require('express-mysql-session')(session);
+const sessionStore = new MysqlStore({}, db);
 
 const { PORT, SECRET } = process.env;
 //middleware 中介軟體 幫忙預先處理送進來的request
@@ -14,6 +17,7 @@ app.use(session({
     saveUninitialized: false,
     resave: false,
     secret: SECRET,
+    store: sessionStore,
     cookie: {
         maxAge: 1800000
     }
