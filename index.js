@@ -4,6 +4,7 @@ const app = express();
 // const multer  = require('multer');
 const upload = require(__dirname + "/modules/upload_images");
 const session = require('express-session');
+const moment = require('moment-timezone');
 
 const { PORT, SECRET } = process.env;
 //middleware 中介軟體 幫忙預先處理送進來的request
@@ -13,6 +14,9 @@ app.use(session({
     saveUninitialized: false,
     resave: false,
     secret: SECRET,
+    cookie: {
+        maxAge: 1800000
+    }
 }));
 app.use(express.urlencoded({extended: false}));
 app.use(express.json());
@@ -87,6 +91,26 @@ app.get('/try_session', (req, res)=>{
         session: req.session,
     });
 })
+
+app.get("/try_json", (req, res)=>{
+    const data = require(__dirname + "/data/data01");
+    console.log(data);
+    res.locals.rawData = data;
+    res.render("try_json");
+});
+
+app.get("/try_moment", (req, res)=>{
+    const fm = "YYYY-MM-DD HH:mm:ss";
+    const nowTime = moment();
+    const createTime = moment("2022-02-28");
+
+    res.json({
+        nowTime: nowTime.format(fm),
+        nowTimeLondon: nowTime.tz("Europe/London").format(fm),
+        createTime: createTime.format(fm),
+        createTimeLondon: createTime.tz("Europe/London").format(fm)
+    })
+});
 
 //-----------------router--------------------
 // app.use("/admins", require(__dirname + "/routes/admins"))
