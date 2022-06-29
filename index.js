@@ -116,6 +116,8 @@ app.get("/try_moment", (req, res)=>{
     })
 });
 
+app.use("/address_book", require(__dirname + "/routes/address_book"))
+
 //-----------------router--------------------
 // app.use("/admins", require(__dirname + "/routes/admins"))
 //這樣就會/admins和/都能進入
