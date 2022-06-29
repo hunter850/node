@@ -4,6 +4,7 @@ const db = require(__dirname + "/../modules/connect_db");
 const router = express.Router(); // 建立 router 物件
 const { toDateString } = require(__dirname + "/../modules/date_tools");
 const moment = require('moment-timezone');
+const upload = require(__dirname + '/../modules/upload_images')
 
 const getListHandler = async (req, res) => {
     let output = {
@@ -77,6 +78,9 @@ const getListHandler = async (req, res) => {
 
 router.get("/add", async (req, res) => {
     res.render('address_book/add');
+});
+router.post("/add", upload.none(), async (req, res) => {
+    res.json(req.body);
 });
 router.get("/", async (req, res) => {
     const output = await getListHandler(req, res);
