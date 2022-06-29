@@ -71,9 +71,13 @@ const getListHandler = async (req, res) => {
     output.code = 200;
     output = { ...output, page, totalRows, totalPages };
 
+    output.showSql = where;
     return output;
 }
 
+router.get("/add", async (req, res) => {
+    res.render('address_book/add');
+});
 router.get("/", async (req, res) => {
     const output = await getListHandler(req, res);
     switch (output.code) {
