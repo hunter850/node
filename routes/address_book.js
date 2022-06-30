@@ -5,6 +5,7 @@ const router = express.Router(); // 建立 router 物件
 const { toDateString } = require(__dirname + "/../modules/date_tools");
 const moment = require('moment-timezone');
 const upload = require(__dirname + '/../modules/upload_images')
+const Joi = require("joi");
 
 const getListHandler = async (req, res) => {
     let output = {
@@ -33,14 +34,14 @@ const getListHandler = async (req, res) => {
     }
     if (beginDate) {
         const mo = moment(beginDate);
-        if(mo.isValid()){
+        if (mo.isValid()) {
             where += ` AND birthday >= '${mo.format('YYYY-MM-DD')}' `;
             output.query.beginDate = mo.format('YYYY-MM-DD');
         }
     }
     if (endDate) {
         const mo = moment(endDate);
-        if(mo.isValid()){
+        if (mo.isValid()) {
             where += ` AND birthday <= '${mo.format('YYYY-MM-DD')}' `;
             output.query.endDate = mo.format('YYYY-MM-DD');
         }
@@ -80,7 +81,30 @@ router.get("/add", async (req, res) => {
     res.render('address_book/add');
 });
 router.post("/add", upload.none(), async (req, res) => {
-    res.json(req.body);
+    const schema = Joi.object({
+        name: Joi.string()
+            .min(2)
+            .max(20)
+            .required()
+            .messages({"string.empty": "姓名必填"}),
+        email: Joi.string()
+            .email(),
+        mobile: Joi.string()
+            .pattern(/^[0-9]{10}$/),
+        birthday: Joi.string(),
+        address: Joi.string(),
+    });
+    // const r = schema.validate(req.body, { abortEarly: false });
+    // if(r.error) {
+    //     r.error.details.forEach(item => {
+    //         console.log(item.message);
+    //     })
+    // }
+    // const {name, email, mobile, birthday, address} = req.body;
+    // const sql = "INSERT INTO `address_book`(`name`, `email`, `mobile`, `birthday`, `address`, `created_at`) VALUES (?,?,?,?,?,NOW())";
+    // const [result] = await db.query(sql, [name, email, mobile, birthday, address]);
+    res.json(schema.validate(req.body, { abortEarly: false }));
+    // res.json(result);
 });
 router.get("/", async (req, res) => {
     const output = await getListHandler(req, res);
@@ -94,7 +118,7 @@ router.get("/", async (req, res) => {
     }
     res.render('address_book/main', output);
 });
-router.get('/api', async (req, res)=>{
+router.get('/api', async (req, res) => {
     const output = await getListHandler(req, res);
     res.json(output);
 });
