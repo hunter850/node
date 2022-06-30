@@ -8,6 +8,7 @@ const moment = require('moment-timezone');
 const db = require(__dirname + '/modules/connect_db');
 const MysqlStore = require('express-mysql-session')(session);
 const sessionStore = new MysqlStore({}, db);
+const axios = require("axios");
 
 const { PORT, SECRET } = process.env;
 //middleware 中介軟體 幫忙預先處理送進來的request
@@ -103,6 +104,15 @@ app.get("/try_json", (req, res)=>{
     res.render("try_json");
 });
 
+app.get('/yahoo', async (req, res)=>{
+    axios.get('https://tw.yahoo.com/')
+    .then(response => {
+      // handle success
+        // console.log(response);
+        res.send(response.data);
+    })
+});
+
 app.get("/try_moment", (req, res)=>{
     const fm = "YYYY-MM-DD HH:mm:ss";
     const nowTime = moment();
@@ -130,6 +140,7 @@ app.use(adminRouter);
 // ------------static folder----------------
 app.use(express.static("public"));
 app.use("/bootstrap", express.static("node_modules/bootstrap/dist"));
+app.use("/joi", express.static("node_modules/joi/dist"));
 // -----------------404---------------------
 app.use((req, res) => {
     res.send(`
