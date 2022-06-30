@@ -66,12 +66,41 @@
         const dataObj = {};
         [...fd].forEach(item => dataObj[item[0]] = item[1]);
 
-        console.log(JSON.stringify(dataObj));
-        console.log(new URLSearchParams(fd).toString());
+        // console.log(JSON.stringify(dataObj));
+        // console.log(new URLSearchParams(fd).toString());
 
         // fetch("", {
         //     method: "POST",
         //     body: fd
+        // })
+        // .then(data => data.json())
+        // .then(data => {
+        //     console.log(data);
+        // })
+        fetch("", {
+            method: "POST",
+            body: new URLSearchParams(fd).toString(),
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            }
+        })
+        .then(data => data.json())
+        .then(data => {
+            console.log(data);
+            if(data.error) {
+                data.error.details.forEach(item => {
+                    console.log(item.message);
+                })
+            } else {
+                console.log(data);
+            }
+        })
+        // fetch("", {
+        //     method: "POST",
+        //     body: JSON.stringify(dataObj),
+        //     headers: {
+        //         "Content-Type": "application/json"
+        //     }
         // })
         // .then(data => data.json())
         // .then(data => {
