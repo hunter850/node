@@ -9,6 +9,12 @@ const db = require(__dirname + '/modules/connect_db');
 const MysqlStore = require('express-mysql-session')(session);
 const sessionStore = new MysqlStore({}, db);
 const axios = require("axios");
+const bcrypt = require("bcryptjs");
+
+const {
+    toDateString,
+    toDateTimeString
+} = require(__dirname + "/modules/date_tools");
 
 //去node console看看
 // const bcrypt = require("bcryptjs");
@@ -36,6 +42,13 @@ app.use(express.json());
 //     res.locals.shinder = '哈囉';
 //     next();
 // })
+app.use((req, res, next)=>{
+    res.locals.toDateString = toDateString;
+    res.locals.toDateString = toDateTimeString;
+    res.locals.session = req.session;
+
+    next();
+});
 
 //-------------設定ejs作為模板---------------
 app.set("view engine", "ejs");
@@ -124,9 +137,43 @@ app.route('/login')
     res.render('login');
 })
 .post(async (req, res)=>{
-    res.json(req.body)
+
+    const {account, password} = req.body;
+
+    const output = {
+        success: false,
+        error: "",
+        code: 0
+    }
+
+    const sql = "SELECT * FROM admins WHERE account = ?";
+    const [r1] = await db.query(sql, [account]);
+
+    if(r1.length !== 1 ) {
+        output.code = 401;
+        output.error = "帳密錯誤"
+        return res.json(output);
+    }
+
+    output.success = await bcrypt.compare(password, r1[0].pass_hash);
+    if(!output.success) {
+        output.code = 402;
+        output.error = "帳密錯誤"
+    } else {
+        req.session.admin = {
+            sid: r1[0].sid,
+            account: r1[0].account,
+        };
+    }
+
+    res.json(output)
 });
 
+app.get("/logout", (req, res)=>{
+    delete req.session.admin;
+
+    res.redirect("/");
+});
 app.get("/try_moment", (req, res)=>{
     const fm = "YYYY-MM-DD HH:mm:ss";
     const nowTime = moment();
