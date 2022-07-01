@@ -10,6 +10,12 @@ const MysqlStore = require('express-mysql-session')(session);
 const sessionStore = new MysqlStore({}, db);
 const axios = require("axios");
 
+//去node console看看
+// const bcrypt = require("bcryptjs");
+//const hash = bcrypt.hashSync(密碼);
+//console.log(bcrypt.compareSync(a))
+
+
 const { PORT, SECRET } = process.env;
 //middleware 中介軟體 幫忙預先處理送進來的request
 // const bodyParser = express.urlencoded({extended: false});
@@ -111,6 +117,14 @@ app.get('/yahoo', async (req, res)=>{
         // console.log(response);
         res.send(response.data);
     })
+});
+
+app.route('/login')
+.get(async (req, res)=>{
+    res.render('login');
+})
+.post(async (req, res)=>{
+    res.json(req.body)
 });
 
 app.get("/try_moment", (req, res)=>{
