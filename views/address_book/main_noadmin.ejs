@@ -1,0 +1,84 @@
+<%- include("../parts/head") %>
+<%- include("../parts/navbar") %>
+<div class="container my-3">
+    <div class="row">
+        <div class="col-lg-6">
+            <form class="d-flex">
+                <input class="form-control me-2" type="date" placeholder="生日從" name="beginDate" autocomplete="off" value="<%= query.beginDate %>">
+                <input class="form-control me-2" type="date" placeholder="生日至" name="endDate" autocomplete="off" value="<%= query.endDate %>">
+                <input class="form-control me-2" type="search" placeholder="Search" name="search" value="<%= query.search %>" autocomplete="off">
+                <button class="btn btn-outline-success" type="submit">Search</button>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <nav aria-label="Page navigation example">
+                <ul class="pagination">
+                    <li class="page-item">
+                        <a
+                            class="page-link"
+                            href="?<%= new URLSearchParams({
+                                page: page - 1,
+                                search: query.search,
+                                beginDate: query.beginDate,
+                                endDate: query.endDate
+                            }).toString() %>"
+                        >Previous</a>
+                    </li>
+
+                    <% for(let i=page-5; i<=page+5; i++) if(i>=1 &&
+                    i<=totalPages){ %>
+                    <li class="page-item <%= page===i ? 'active' : '' %>">
+                        <a
+                            class="page-link"
+                            href="?<%= new URLSearchParams({
+                                page: i,
+                                search: query.search,
+                                beginDate: query.beginDate,
+                                endDate: query.endDate
+                            }).toString() %>"
+                        ><%= i %></a>
+                    </li>
+                    <% } %>
+
+                    <li class="page-item">
+                        <a
+                            class="page-link"
+                            href="?<%= new URLSearchParams({
+                                page: page + 1,
+                                search: query.search,
+                                beginDate: query.beginDate,
+                                endDate: query.endDate
+                            }).toString() %>"
+                        >Next</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <% for(let i of rows) { %>
+                    <tr>
+                        <th scope="row"><%= i.sid %></th>
+                        <td><%= i.name %></td>
+                    </tr>
+                <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<%- include("../parts/scripts") %>
+<%- include("../parts/foot") %>
