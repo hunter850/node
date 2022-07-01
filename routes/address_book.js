@@ -78,9 +78,15 @@ const getListHandler = async (req, res) => {
 }
 
 router.get("/add", async (req, res) => {
+    if(! req.session.admin){
+        return res.redirect('/');
+    }
     res.render('address_book/add');
 });
 router.post("/add", upload.none(), async (req, res) => {
+    if(! req.session.admin){
+        return res.json({success: false, error: '請先登入'});
+    }
     const schema = Joi.object({
         name: Joi.string()
             .min(2)
@@ -116,7 +122,11 @@ router.get("/", async (req, res) => {
             return res.redirect(`?page=${output.totalPages}`);
             break;
     }
-    res.render('address_book/main', output);
+    if(! req.session.admin){
+        res.render('address_book/main_noadmin', output);
+    } else {
+        res.render('address_book/main', output);
+    }
 });
 router.get('/api', async (req, res) => {
     const output = await getListHandler(req, res);
