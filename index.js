@@ -220,8 +220,11 @@ app.use("/address_book", require(__dirname + "/routes/address_book"))
 // app.use("/admins", require(__dirname + "/routes/admins"))
 //這樣就會/admins和/都能進入
 const adminRouter = require(__dirname + "/routes/admins");
+const cartsRouter = require(__dirname + "/routes/carts");
 app.use("/admins", adminRouter);
+app.use("/carts", cartsRouter);
 app.use(adminRouter);
+app.use(cartsRouter);
 
 
 // ------------static folder----------------
