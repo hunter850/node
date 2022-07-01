@@ -10,6 +10,7 @@ const MysqlStore = require('express-mysql-session')(session);
 const sessionStore = new MysqlStore({}, db);
 const axios = require("axios");
 const bcrypt = require("bcryptjs");
+const cors = require('cors')
 
 const {
     toDateString,
@@ -26,6 +27,31 @@ const { PORT, SECRET } = process.env;
 //middleware 中介軟體 幫忙預先處理送進來的request
 // const bodyParser = express.urlencoded({extended: false});
 //-------------Top-levet middleware--------------
+/*
+const cors = require('cors');
+var whitelist = ['http://localhost:8080', undefined, 'http://localhost:3000'];
+var corsOptions = {
+    credentials: true,
+    origin: function (origin, callback) {
+        console.log('origin: ' + origin);
+        if (whitelist.indexOf(origin) !== -1) {
+            callback(null, true)
+        } else {
+            callback(new Error('Not allowed by CORS'))
+        }
+    }
+};
+app.use(cors(corsOptions));
+*/
+const corsOptions = {
+    credentials: true,
+    origin: (origin, cb) => {
+        console.log({ origin });
+        cb(null, true);
+    }
+};
+app.use(cors(corsOptions));
+
 app.use(session({
     saveUninitialized: false,
     resave: false,
@@ -35,14 +61,14 @@ app.use(session({
         maxAge: 1800000
     }
 }));
-app.use(express.urlencoded({extended: false}));
+app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 //middleware不執行next就會斷在這裡 後面的都不會跑
 // app.use((req, res, next) => {
 //     res.locals.shinder = '哈囉';
 //     next();
 // })
-app.use((req, res, next)=>{
+app.use((req, res, next) => {
     res.locals.toDateString = toDateString;
     res.locals.toDateString = toDateTimeString;
     res.locals.session = req.session;
@@ -57,7 +83,7 @@ app.set("view engine", "ejs");
 
 //-----------------route--------------------
 app.get("/", (req, res) => {
-    res.render("main", {name: "Ming"});
+    res.render("main", { name: "Ming" });
 });
 
 //去http://localhost:3300/try_qs?a=10&b=20 看會回傳一包物件 a[]=10 a會是陣列 a[命名] a會是物件
@@ -75,39 +101,39 @@ app.post("/try_post", (req, res) => {
 
 //小心因為到/try-post-form這個頁面會先跑post 如果ejs裡有擺變數 會抓到undefined噴錯 所以ejs template裡面要寫三元運算判斷若undefined 要輸出 ""
 app.route('/try_post_form')
-    .get((req, res)=>{
+    .get((req, res) => {
         res.render('try_post_form');
     })
-    .post((req, res)=>{
-        const {account, password} = req.body;
-        res.render('try_post_form', {account, password});
+    .post((req, res) => {
+        const { account, password } = req.body;
+        res.render('try_post_form', { account, password });
     });
 
 //singe只能上傳單欄單檔
-app.post('/try_upload', upload.single('avatar'), (req, res)=>{
+app.post('/try_upload', upload.single('avatar'), (req, res) => {
     res.json(req.file);
 });
 //array能單欄上傳多檔案
-app.post('/try_uploads', upload.array('photos'), (req, res)=>{
+app.post('/try_uploads', upload.array('photos'), (req, res) => {
     res.json(req.files);
 });
 
 //:代表藥用params ?為選擇性 可傳可不傳
-app.get('/try_params/:action?/:id?', (req, res)=>{
+app.get('/try_params/:action?/:id?', (req, res) => {
     res.json(req.params);
 });
 
 //regexp 只要符合regexp判斷的就會進入
-app.get(/^\/hi\/?/i, (req, res)=>{
-    res.json({url: req.url});
+app.get(/^\/hi\/?/i, (req, res) => {
+    res.json({ url: req.url });
 });
 
 //陣列 符合陣列的都會進入
-app.get(["/aaa", "/bbb"], (req, res)=>{
-    res.json({url: req.url, name: "Array"});
+app.get(["/aaa", "/bbb"], (req, res) => {
+    res.json({ url: req.url, name: "Array" });
 });
 
-app.get('/try_session', (req, res)=>{
+app.get('/try_session', (req, res) => {
     req.session.my_var = req.session.my_var || 0;
     req.session.my_var++;
     res.json({
@@ -116,65 +142,65 @@ app.get('/try_session', (req, res)=>{
     });
 })
 
-app.get("/try_json", (req, res)=>{
+app.get("/try_json", (req, res) => {
     const data = require(__dirname + "/data/data01");
     console.log(data);
     res.locals.rawData = data;
     res.render("try_json");
 });
 
-app.get('/yahoo', async (req, res)=>{
+app.get('/yahoo', async (req, res) => {
     axios.get('https://tw.yahoo.com/')
-    .then(response => {
-      // handle success
-        // console.log(response);
-        res.send(response.data);
-    })
+        .then(response => {
+            // handle success
+            // console.log(response);
+            res.send(response.data);
+        })
 });
 
 app.route('/login')
-.get(async (req, res)=>{
-    res.render('login');
-})
-.post(async (req, res)=>{
+    .get(async (req, res) => {
+        res.render('login');
+    })
+    .post(async (req, res) => {
 
-    const {account, password} = req.body;
+        const { account, password } = req.body;
 
-    const output = {
-        success: false,
-        error: "",
-        code: 0
-    }
+        const output = {
+            success: false,
+            error: "",
+            code: 0
+        }
 
-    const sql = "SELECT * FROM admins WHERE account = ?";
-    const [r1] = await db.query(sql, [account]);
+        const sql = "SELECT * FROM admins WHERE account = ?";
+        const [r1] = await db.query(sql, [account]);
 
-    if(r1.length !== 1 ) {
-        output.code = 401;
-        output.error = "帳密錯誤"
-        return res.json(output);
-    }
+        if (r1.length !== 1) {
+            output.code = 401;
+            output.error = "帳密錯誤"
+            return res.json(output);
+        }
 
-    output.success = await bcrypt.compare(password, r1[0].pass_hash);
-    if(!output.success) {
-        output.code = 402;
-        output.error = "帳密錯誤"
-    } else {
-        req.session.admin = {
-            sid: r1[0].sid,
-            account: r1[0].account,
-        };
-    }
+        output.success = await bcrypt.compare(password, r1[0].pass_hash);
+        if (!output.success) {
+            output.code = 402;
+            output.error = "帳密錯誤"
+        } else {
+            req.session.admin = {
+                sid: r1[0].sid,
+                account: r1[0].account,
+            };
+        }
 
-    res.json(output)
-});
+        res.json(output)
+    });
 
-app.get("/logout", (req, res)=>{
+app.get("/logout", (req, res) => {
     delete req.session.admin;
 
     res.redirect("/");
 });
-app.get("/try_moment", (req, res)=>{
+app.get("/try_moment", (req, res) => {
     const fm = "YYYY-MM-DD HH:mm:ss";
     const nowTime = moment();
     const createTime = moment("2022-02-28");
