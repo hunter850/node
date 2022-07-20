@@ -11,6 +11,7 @@ const sessionStore = new MysqlStore({}, db);
 const axios = require("axios");
 const bcrypt = require("bcryptjs");
 const cors = require('cors')
+const jwt = require("jsonwebtoken");
 
 const {
     toDateString,
@@ -23,7 +24,7 @@ const {
 //console.log(bcrypt.compareSync(a))
 
 
-const { PORT, SECRET } = process.env;
+const { PORT, SECRET, JWT_SECRET } = process.env;
 //middleware 中介軟體 幫忙預先處理送進來的request
 // const bodyParser = express.urlencoded({extended: false});
 //-------------Top-levet middleware--------------
@@ -72,6 +73,12 @@ app.use((req, res, next) => {
     res.locals.toDateString = toDateString;
     res.locals.toDateString = toDateTimeString;
     res.locals.session = req.session;
+    const auth = req.get('Authorization');
+    res.locals.payload = null;
+    if(auth && auth.indexOf('Bearer ') === 0) {
+        const token = auth.slice(7);
+        res.locals.payload = jwt.verify(token, JWT_SECRET);
+    }
 
     next();
 });
@@ -188,6 +195,47 @@ app.route('/login')
         } else {
             req.session.admin = {
                 sid: r1[0].sid,
+                account: r1[0].account,
+            };
+        }
+
+        res.json(output)
+    });
+
+app.route('/login-jwt')
+    .get(async (req, res) => {
+        res.render('login');
+    })
+    .post(async (req, res) => {
+
+        const { account, password } = req.body;
+
+        const output = {
+            success: false,
+            error: "",
+            code: 0
+        }
+
+        const sql = "SELECT * FROM admins WHERE account = ?";
+        const [r1] = await db.query(sql, [account]);
+
+        if (r1.length !== 1) {
+            output.code = 401;
+            output.error = "帳密錯誤"
+            return res.json(output);
+        }
+
+        output.success = await bcrypt.compare(password, r1[0].pass_hash);
+        if (!output.success) {
+            output.code = 402;
+            output.error = "帳密錯誤"
+        } else {
+            const token = jwt.sign({
+                sid: r1[0].sid,
+                account: r1[0].account,
+            }, JWT_SECRET);
+            output.data = {
+                token,
                 account: r1[0].account,
             };
         }
