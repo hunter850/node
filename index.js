@@ -235,6 +235,7 @@ app.route('/login-jwt')
                 account: r1[0].account,
             }, JWT_SECRET);
             output.data = {
+                sid: r1[0].sid,
                 token,
                 account: r1[0].account,
             };
