@@ -77,7 +77,7 @@ app.use((req, res, next) => {
     res.locals.payload = null;
     if(auth && auth.indexOf('Bearer ') === 0) {
         const token = auth.slice(7);
-        res.locals.payload = jwt.verify(token, JWT_SECRET);
+        res.locals.loginUser = jwt.verify(token, JWT_SECRET);
     }
 
     next();

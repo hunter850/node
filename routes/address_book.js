@@ -133,4 +133,21 @@ router.get('/api', async (req, res) => {
     output.payload = res.locals.payload;
     res.json(output);
 });
+router.get('/api-auth', async (req, res) => {
+    let output = {
+        success: false,
+        error: ''
+    };
+    if(res.locals.loginUser && res.locals.loginUser.account){
+        output = {...(await getListHandler(req, res)), success: true};
+
+    } else {
+        output.error = '沒有授權';
+    }
+    output.loginUser = res.locals.loginUser;
+    res.json(output);
+    // const output = await getListHandler(req, res);
+    // output.payload = res.locals.payload;
+    // res.json(output);
+});
 module.exports = router;
